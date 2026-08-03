@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+.DS_Store
+.claude/
+output/*.stl
+output/*.png
+output/*.svg
+output/compare/
+output/review.html
+output/_lugs_tmp.step
+output/xometry_fitment_kit.zip
+output/print/check_print_parts.png
+output/intercontinental-case-review.html

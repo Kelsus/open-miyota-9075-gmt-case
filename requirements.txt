@@ -1,0 +1,5 @@
+cadquery==2.8.0
+numpy
+numpy-stl
+matplotlib
+pillow

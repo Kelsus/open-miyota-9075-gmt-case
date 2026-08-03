@@ -1,0 +1,209 @@
+<style>
+  :root{
+    --bg:#f3f1ec; --panel:#faf9f6; --ink:#20211f; --ink-soft:#54544e;
+    --hair:#d8d4cb; --hair-strong:#c2bcae; --brass:#9a6f33; --brass-2:#b98a45;
+    --steel:#5d6b78; --sap:#7fa9c4; --good:#4f7a52; --warn:#9a6f33;
+    --mono:"SF Mono",ui-monospace,"Menlo","Roboto Mono",monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+    --serif:"Iowan Old Style","Palatino Linotype","Palatino","Book Antiqua","Georgia",serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#16171a; --panel:#1e2024; --ink:#eceae4; --ink-soft:#a4a49c;
+      --hair:#2f3238; --hair-strong:#3c4046; --brass:#c59a5a; --brass-2:#d9b579;
+      --steel:#8a9aac; --sap:#8fbdd9;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#16171a; --panel:#1e2024; --ink:#eceae4; --ink-soft:#a4a49c;
+    --hair:#2f3238; --hair-strong:#3c4046; --brass:#c59a5a; --brass-2:#d9b579;
+    --steel:#8a9aac; --sap:#8fbdd9;
+  }
+  :root[data-theme="light"]{
+    --bg:#f3f1ec; --panel:#faf9f6; --ink:#20211f; --ink-soft:#54544e;
+    --hair:#d8d4cb; --hair-strong:#c2bcae; --brass:#9a6f33; --brass-2:#b98a45;
+    --steel:#5d6b78; --sap:#7fa9c4;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    line-height:1.55;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1000px;margin:0 auto;padding:clamp(20px,5vw,60px) clamp(18px,4vw,44px) 90px;}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--brass);display:flex;gap:14px;flex-wrap:wrap;align-items:center;}
+  .eyebrow .dot{width:4px;height:4px;background:var(--brass);border-radius:50%;opacity:.6}
+  h1{font-family:var(--serif);font-weight:600;letter-spacing:-.01em;line-height:.98;
+    margin:.35em 0 .1em;font-size:clamp(44px,9vw,88px);text-wrap:balance;}
+  h1 .k{display:block;font-size:.34em;letter-spacing:.34em;text-transform:uppercase;
+    color:var(--ink-soft);font-family:var(--mono);font-weight:500;margin-bottom:.5em;}
+  .lede{font-size:clamp(15px,2vw,18px);color:var(--ink-soft);max-width:60ch;margin:.2em 0 0;}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--hair);
+    border:1px solid var(--hair);margin:38px 0 10px;border-radius:10px;overflow:hidden;}
+  .stat{background:var(--panel);padding:18px 20px;}
+  .stat .n{font-family:var(--serif);font-size:clamp(26px,4.4vw,40px);line-height:1;
+    font-variant-numeric:tabular-nums;}
+  .stat .u{font-family:var(--mono);font-size:11px;color:var(--brass);margin-left:3px}
+  .stat .l{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-soft);margin-top:8px;}
+  @media(max-width:620px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+  section{margin-top:56px;}
+  h2{font-family:var(--mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:500;display:flex;align-items:center;gap:12px;margin:0 0 22px;}
+  h2::before{content:"";width:9px;height:9px;border:1.5px solid var(--brass);
+    transform:rotate(45deg);flex:none;}
+  h2 .rule{flex:1;height:1px;background:var(--hair);}
+
+  .gallery{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;}
+  .shot{background:var(--panel);border:1px solid var(--hair);border-radius:10px;
+    padding:6px;position:relative;}
+  .shot img{width:100%;height:100%;object-fit:contain;display:block;}
+  .shot .cap{position:absolute;left:12px;bottom:10px;font-family:var(--mono);font-size:10px;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);}
+  .shot.big{grid-column:span 4;aspect-ratio:1/1;}
+  .shot.sm{grid-column:span 2;aspect-ratio:1/1;}
+  .shot.wide{grid-column:span 3;aspect-ratio:1/.82;}
+  @media(max-width:620px){.shot.big,.shot.sm,.shot.wide{grid-column:span 6}}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media(max-width:720px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--hair);border-radius:10px;padding:22px 24px;}
+  .card h3{margin:0 0 4px;font-family:var(--serif);font-size:19px;font-weight:600;}
+  .card p{margin:.2em 0 0;color:var(--ink-soft);font-size:14px;}
+  .locked{display:flex;gap:14px;padding:15px 0;border-bottom:1px solid var(--hair);}
+  .locked:last-child{border-bottom:none;padding-bottom:0}
+  .locked:first-child{padding-top:0}
+  .tag{font-family:var(--mono);font-size:10px;letter-spacing:.08em;padding:3px 8px;border-radius:20px;
+    height:fit-content;white-space:nowrap;text-transform:uppercase;}
+  .tag.ok{color:var(--good);border:1px solid color-mix(in srgb,var(--good) 40%,transparent);}
+  .tag.q{color:var(--warn);border:1px solid color-mix(in srgb,var(--warn) 45%,transparent);}
+  .locked .b{font-weight:600;font-size:14.5px;}
+  .locked .s{color:var(--ink-soft);font-size:13px;margin-top:2px;}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  .spectable{border:1px solid var(--hair);border-radius:10px;overflow:hidden;background:var(--panel);}
+  .spectable table{}
+  tr{border-bottom:1px solid var(--hair);}
+  tbody tr:last-child{border-bottom:none}
+  td,th{padding:9px 16px;text-align:left;vertical-align:top;}
+  th{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:500;background:color-mix(in srgb,var(--ink) 3%,transparent);}
+  td.k{color:var(--ink-soft);width:44%}
+  td.v{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;}
+  .grouprow td{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--brass);background:color-mix(in srgb,var(--brass) 7%,transparent);padding-top:11px;padding-bottom:11px;}
+  .vflag{color:var(--warn);font-size:10px;font-family:var(--mono);margin-left:6px}
+
+  ol.q{list-style:none;counter-reset:q;margin:0;padding:0;display:grid;gap:12px;}
+  ol.q li{counter-increment:q;background:var(--panel);border:1px solid var(--hair);border-radius:10px;
+    padding:16px 20px 16px 58px;position:relative;}
+  ol.q li::before{content:counter(q,decimal-leading-zero);position:absolute;left:20px;top:16px;
+    font-family:var(--mono);font-size:12px;color:var(--brass);}
+  ol.q b{font-size:15px;}
+  ol.q p{margin:.25em 0 0;color:var(--ink-soft);font-size:13.5px;}
+
+  .files{font-family:var(--mono);font-size:12.5px;background:var(--panel);border:1px solid var(--hair);
+    border-radius:10px;overflow:hidden;}
+  .files .f{display:flex;justify-content:space-between;gap:16px;padding:8px 16px;border-bottom:1px solid var(--hair);}
+  .files .f:last-child{border-bottom:none}
+  .files .f span:last-child{color:var(--ink-soft)}
+  .foot{margin-top:60px;padding-top:22px;border-top:1px solid var(--hair);color:var(--ink-soft);
+    font-size:12.5px;font-family:var(--mono);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+  a{color:var(--brass);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--brass) 40%,transparent);}
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">
+    <span>Case Design</span><span class="dot"></span>
+    <span>Rev F.8 — underside tangent-launch rebuild: wedge and tip bulb gone, profile gated</span><span class="dot"></span>
+    <span>Miyota 9075 GMT</span><span class="dot"></span>
+    <span>2026·08·02</span>
+  </div>
+  <h1><span class="k">Kelsus</span>Intercontinental</h1>
+  <p class="lede">A 39&nbsp;mm true-GMT case built around the Miyota&nbsp;9075 — refined
+  down-turned lugs, a sloped bidirectional 24-hour steel bezel, screw-down crown, and a
+  threaded sapphire exhibition back. Delivered as a parametric, milling-ready CAD model.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="n">39.0<span class="u">mm</span></div><div class="l">Case Ø</div></div>
+    <div class="stat"><div class="n">{{L2L}}<span class="u">mm</span></div><div class="l">Lug-to-lug</div></div>
+    <div class="stat"><div class="n">{{THK}}<span class="u">mm</span></div><div class="l">Thickness</div></div>
+    <div class="stat"><div class="n">20<span class="u">mm</span></div><div class="l">Lug width</div></div>
+  </div>
+
+  <section>
+    <h2>Renders <span class="rule"></span></h2>
+    <div class="gallery">
+      <div class="shot big"><img src="{{IMG_ISO}}" alt="isometric"><span class="cap">Iso · 3/4 top</span></div>
+      <div class="shot sm"><img src="{{IMG_TOP}}" alt="top"><span class="cap">Top</span></div>
+      <div class="shot wide"><img src="{{IMG_SIDE}}" alt="lug downturn"><span class="cap">Lug downturn</span></div>
+      <div class="shot wide"><img src="{{IMG_BACK}}" alt="caseback"><span class="cap">Exhibition back</span></div>
+    </div>
+    <p style="color:var(--ink-soft);font-size:12.5px;font-family:var(--mono);margin-top:12px;">
+      Flat-shaded from the exported meshes. Surfaces read faceted at preview tessellation; the STEP solids are smooth.</p>
+  </section>
+
+  <section>
+    <h2>Locked with you <span class="rule"></span></h2>
+    <div class="grid2">
+      <div class="card">
+        <div class="locked"><span class="tag ok">Bezel</span><div><div class="b">Bidirectional rotating 24h, sloped</div><div class="s">120-click steel bezel, engraved 2–24 + triangles (radial, GMT-style), black lacquer fill, lume pip at 24, coin-edge grip.</div></div></div>
+        <div class="locked"><span class="tag ok">Crown</span><div><div class="b">Screw-down, ~100&nbsp;m</div><div class="s">Threaded tube, twin gaskets, fluted grip with smooth end band, Kelsus&nbsp;K from the logo SVG.</div></div></div>
+        <div class="locked"><span class="tag ok">Movement</span><div><div class="b">Stack verified — official 9075 drawing</div><div class="s">Height 5.12, stem 2.55 below dial plane, register Ø25.60&nbsp;Js8. Cased via a machined steel movement ring (part 08).</div></div></div>
+      </div>
+      <div class="card">
+        <div class="locked"><span class="tag ok">Caseback</span><div><div class="b">Threaded sapphire exhibition ring</div><div class="s">"KELSUS / INTERCONTINENTAL" engraved around the metal band. Rotor visible.</div></div></div>
+        <div class="locked"><span class="tag ok">Dial</span><div><div class="b">Ø31.0 × 0.40&nbsp;mm</div><div class="s">Case pocket Ø31.3, rehaut Ø29.5 hides the dial edge. Feet Ø0.7 on a 24.33&nbsp;mm span per the Miyota drawing.</div></div></div>
+        <div class="locked"><span class="tag ok">Output</span><div><div class="b">Parametric CAD → STEP</div><div class="s">Every part a separate solid; one edit to the parameter block re-cuts the whole case.</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Specification <span class="rule"></span></h2>
+    <div class="spectable">
+      <table>
+        <thead><tr><th>Parameter</th><th style="text-align:right">Value</th></tr></thead>
+        <tbody>
+        {{SPEC_ROWS}}
+        </tbody>
+      </table>
+    </div>
+    <p style="color:var(--ink-soft);font-size:12px;font-family:var(--mono);margin-top:10px">
+      <span style="color:var(--good)">✓</span> Movement dims verified against the official Miyota 9075 casing drawing (907500C0).</p>
+  </section>
+
+  <section>
+    <h2>Assumed — correct me <span class="rule"></span></h2>
+    <div class="grid2">
+      <div class="card"><h3>Finishing</h3><p>Per your renders: brushed top surfaces and flank, polished chamfers on the lug edges and bezel rim, polished crown end band. Not yet mapped face-by-face in the CAD.</p></div>
+      <div class="card"><h3>Date window</h3><p>Kept at 3 o'clock (the 9075 has a date). Say the word for a no-date dial seat with the date wheel capped.</p></div>
+      <div class="card"><h3>Bezel numeral font</h3><p>Engraving pockets cut with a DIN-style sans per your renders. Final font is a machining/engraving call — swappable.</p></div>
+      <div class="card"><h3>Crystal</h3><p>Low-dome sapphire Ø30.6 × 1.5, inner AR, standing 0.5 proud of the bezel like your profile render.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Open questions <span class="rule"></span></h2>
+    <ol class="q">
+      <li><b>Lug gap: 20.00 or 20.7?</b><p>Your renders measure a <b>20.67–21.14&nbsp;mm</b> gap between the lug inner faces. I have held <b>20.00 +0.10/−0</b> because that is the functional spec a 20&nbsp;mm strap and an Oyster end link are built to. If the wider look is deliberate, say so and I will open it up — but then the bracelet has to be made to match.</p></li>
+      <li><b>Spring bar: sports or dress?</b><p>I committed to the <b>Oyster/sports</b> standard — Ø2.0&nbsp;mm bar, Ø1.2&nbsp;mm tips, so the lug hole is <b>Ø1.35</b>. Your render's holes read closer to Ø0.9–1.0 (the ISO dress-watch size). The bracelet supplier has to match whichever we pick.</p></li>
+      <li><b>Bezel top-face angle.</b><p>The three mockups disagree: the two 3/4 views give ≈12° from horizontal, the side view ≈30°. I used <b>12°</b> (a 0.64&nbsp;mm drop across the 3.0&nbsp;mm annulus) because the 3/4 views are self-consistent and the side view has measurable perspective error. Worth a look.</p></li>
+      <li><b>Caseback thread pitch.</b><p><b>M30×0.5</b> is genuine watch practice (it's what Rolex uses) but it is <i>not</i> in the ISO 261 preferred series, so it can't be written as a standard callout and no major toolmaker stocks the tap — it wants single-point turning or thread milling. M30×0.75 is the standards-clean alternative. Your call; I've dimensioned it explicitly either way.</p></li>
+      <li><b>Finishing map.</b><p>Assumed from the renders: brushed top face, flank and lug tops; polished on the bezel's inner and outer chamfers, the lug outer bevel wrapping the tip, the case top-edge bevel and the crown end band. Confirm and I'll annotate face-by-face for CAM.</p></li>
+      <li><b>Standards worth buying before cutting metal.</b><p>Three paywalled documents would replace inference with spec: <b>NIHS G 60-30</b> (caseback thread dimensions, ~CHF 40), <b>NIHS G 60-32</b> (the 6-notch pattern, ~CHF 45), and <b>ISO 14368-1</b> (sapphire glass dimensions/tolerances, ~CHF 60). Everything else is sourced and cited.</p></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Deliverables <span class="rule"></span></h2>
+    <div class="files">{{FILES}}</div>
+    <p style="color:var(--ink-soft);font-size:12.5px;font-family:var(--mono);margin-top:12px">
+      All under <b>output/</b>. STEP = solids for CAM/quoting; STL = mesh previews; assembly.step = full stack incl. movement envelope.</p>
+  </section>
+
+  <div class="foot">
+    <span>Kelsus Intercontinental · Rev F · parametric source: case_model.py</span>
+    <span>{{THK}} × 39.0 mm · 316L · Miyota 9075</span>
+  </div>
+</div>
