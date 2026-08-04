@@ -136,6 +136,17 @@ suppliers.
 
 ## Route B: prototype CNC shop, step by step
 
+A real data point first (August 2026): Xometry's instant quote for the
+midcase alone, aluminum 6061, quantity 1, standard ±0.13 tolerance and
+no threads, was $670. The threads and the tight fits from the drawings
+would raise that. If a printed prototype has already answered the form
+and fit questions, Route A samples deliver more per dollar; a US
+instant-quote shop at quantity 1 is the most expensive way to hold this
+case in metal. Cheaper metal options: overseas instant-quote CNC
+services (JLCCNC, PCBWay, RapidDirect) quote the same uploads at a
+fraction of the US price, and an SLM 316L metal print of the midcase
+(rough surface, no working fits, real steel weight) runs cheaper still.
+
 1. Upload `01_midcase.step`, and `02_bezel.step` if the look matters for
    this round. Process: CNC machining, 5-axis. Material: aluminum
    6061 for a fit check round; 316L later runs near 3 to 5 times the
