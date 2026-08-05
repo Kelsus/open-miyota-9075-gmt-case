@@ -91,6 +91,19 @@ def p01_case():
 def p04_back():
     back = imp("04_caseback_ring")
     ro = P["cb_thread_dia"] / 2.0 - 0.05
+    # fill the O-ring groove (no gasket on the print variant): it crosses
+    # the snap-tab feet, and with it open each tab hangs on a 0.05 sliver
+    # that the boolean severs into a loose piece
+    gz = P["back_recess_z"] + 0.95 + P["cb_oring_groove_w"] / 2.0
+    gw = P["cb_oring_groove_w"]
+    gd = P["cb_oring_groove_d"]
+    back = back.union(
+        cq.Workplane("XZ")
+        .moveTo(ro - gd - 0.05, gz - gw / 2.0 - 0.01)
+        .lineTo(ro - 0.001, gz - gw / 2.0 - 0.01)
+        .lineTo(ro - 0.001, gz + gw / 2.0 + 0.01)
+        .lineTo(ro - gd - 0.05, gz + gw / 2.0 + 0.01)
+        .close().revolve(360, (0, 0, 0), (0, 1, 0)))
     # 3 snap bumps: partial-revolve wedge ribs on the barrel OD, 40 deg
     # lead chamfer below, square shoulder above
     z0, z1 = CB_BUMP_Z
@@ -118,19 +131,21 @@ def p04_back():
                 .rect(CB_SLIT_W, CB_SLIT_W)
                 .extrude(P["cb_thread_top_z"])
                 .rotate((x, y, 0), (x, y, 1), math.degrees(a)))
-    # thin the wall behind each tab so the tab can flex (relief pocket)
-    for ang in (90, 210, 330):
-        rel = (ring_cut(2 * (ro - 1.3) - 0.0, 2 * (ro - 0.55), 1.05, 3.55)
-               .intersect(cq.Workplane("XY")
-                          .moveTo(0, 0)
-                          .circle(ro + 2).extrude(4)))
-        wedge = (cq.Workplane("XZ")
-                 .moveTo(ro - 1.3, 1.05).lineTo(ro - 0.55, 1.05)
-                 .lineTo(ro - 0.55, 3.55).lineTo(ro - 1.3, 3.55).close()
-                 .revolve(CB_TAB_ARC, (0, 0, 0), (0, 1, 0))
-                 .rotate((0, 0, 0), (0, 0, 1), ang - CB_TAB_ARC / 2.0))
-        slits.append(wedge)
+    # cut the slits as one compound, then the relief wedges as another:
+    # the wedges OVERLAP the slit boxes at the tab edges, and OCCT
+    # fragments a boolean whose compound tool self-overlaps (same
+    # failure class as the lume-pip artifact in the master model)
     back = back.cut(C.compound([s.val() for s in slits]))
+    # thin the wall behind each tab so the tab can flex (relief pocket)
+    wedges = []
+    for ang in (90, 210, 330):
+        wedges.append(
+            (cq.Workplane("XZ")
+             .moveTo(ro - 1.3, 1.05).lineTo(ro - 0.55, 1.05)
+             .lineTo(ro - 0.55, 3.55).lineTo(ro - 1.3, 3.55).close()
+             .revolve(CB_TAB_ARC, (0, 0, 0), (0, 1, 0))
+             .rotate((0, 0, 0), (0, 0, 1), ang - CB_TAB_ARC / 2.0)))
+    back = back.cut(C.compound([w.val() for w in wedges])).clean()
     save(back, "p04_back")
 
 
@@ -140,17 +155,22 @@ def p02_bezel():
     # integral snap lip inside the skirt bore, replacing the spring ring:
     # 45 deg lead on the bottom (climbs the boss), square retention
     # shoulder on top (sits under the boss groove's upper wall)
-    r_in = P["bezel_inner_wall"] / 2.0          # 17.05
     r_lip = BEZ_LIP_ID / 2.0                    # 16.675
+    # anchor the lip INSIDE the bezel's internal spring-ring groove: at
+    # this height the bore wall is recessed to the groove (floor Ø34.7),
+    # so the lip must reach past it to fuse. (A lip anchored at the
+    # nominal bore radius floated in the groove as a separate loose
+    # ring; the single-solid guard in save() now catches this class.)
+    r_anchor = P["bezel_groove_dia"] / 2.0 + 0.05
     z0 = C.GROOVE_Z0 + 0.05
     lip = (cq.Workplane("XZ")
-           .moveTo(r_in + 0.05, z0)
-           .lineTo(r_lip, z0 + (r_in - r_lip) + 0.05)
+           .moveTo(r_anchor, z0)
+           .lineTo(r_lip, z0 + 0.35)            # lead-in under the boss
            .lineTo(r_lip, z0 + 0.50)
-           .lineTo(r_in + 0.05, z0 + 0.50)
+           .lineTo(r_anchor, z0 + 0.50)
            .close()
            .revolve(360, (0, 0, 0), (0, 1, 0)))
-    save(bez.union(lip), "p02_bezel")
+    save(bez.union(lip).clean(), "p02_bezel")
 
 
 # -------------------------------------------------------------- crystal ----
