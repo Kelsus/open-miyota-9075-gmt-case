@@ -30,14 +30,20 @@ PIN_LEN = 5.2
 def proto_crown():
     crown = importers.importStep(os.path.join(OUT, "06_crown.step"))
     bb = crown.val().BoundingBox()
-    fill = (cq.Workplane("YZ", origin=(bb.xmin - 0.01, 0, C.STEM_Z))
-            .circle(P["crown_bore_dia"] / 2.0 - 0.005)
-            .extrude(bb.xmax - bb.xmin - 1.2))
+    # the fill must INTERFERE with the crown to fuse: oversize it against
+    # the bore and run it past the bore bottom into solid metal. (An
+    # earlier undersized fill floated inside the bore and the exported
+    # STEP contained two disjoint solids; a machine shop flagged it.)
+    fill = (cq.Workplane("YZ", origin=(bb.xmin + 0.2, 0, C.STEM_Z))
+            .circle(P["crown_bore_dia"] / 2.0 + 0.15)
+            .extrude(bb.xmax - bb.xmin - 1.0))
     pin = (cq.Workplane("YZ", origin=(bb.xmin - PIN_LEN, 0, C.STEM_Z))
            .circle(CROWN_PIN / 2.0).extrude(PIN_LEN + 1.0))
-    out = crown.union(fill).union(pin)
-    exporters.export(out.val(), os.path.join(XOM, "x06_crown_proto.step"))
-    print("  wrote xometry/x06_crown_proto.step")
+    out = crown.union(fill).union(pin).clean()
+    sols = out.solids().vals()
+    assert len(sols) == 1, f"crown proto must be ONE solid, got {len(sols)}"
+    exporters.export(sols[0], os.path.join(XOM, "x06_crown_proto.step"))
+    print("  wrote xometry/x06_crown_proto.step (1 solid)")
 
 
 COPIES = {

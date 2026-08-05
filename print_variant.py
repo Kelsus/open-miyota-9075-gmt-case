@@ -45,8 +45,12 @@ def imp(name):
 
 
 def save(wp, name):
-    sol = wp.val() if hasattr(wp, "val") else wp
-    exporters.export(sol, os.path.join(PRT, name + ".stl"),
+    sols = wp.solids().vals() if hasattr(wp, "solids") else [wp]
+    if len(sols) != 1:
+        raise RuntimeError(f"{name}: expected ONE fused solid, got "
+                           f"{len(sols)} - disjoint bodies print as "
+                           f"separate loose pieces")
+    exporters.export(sols[0], os.path.join(PRT, name + ".stl"),
                      tolerance=0.01, angularTolerance=0.2)
     print(f"  wrote print/{name}.stl")
 
@@ -193,12 +197,15 @@ def p06_crown():
     bb = crown.val().BoundingBox()
     # crown axis is +X at z STEM_Z; inner face at bb.xmin. Fill the S0.9
     # bore, then grow the press pin toward the case.
-    fill = (cq.Workplane("YZ", origin=(bb.xmin - 0.01, 0, C.STEM_Z))
-            .circle(P["crown_bore_dia"] / 2.0 - 0.005)
-            .extrude(bb.xmax - bb.xmin - 1.2))
+    # oversized against the bore and driven past the bore bottom so the
+    # union truly fuses (an undersized fill left the crown as a separate
+    # loose body)
+    fill = (cq.Workplane("YZ", origin=(bb.xmin + 0.2, 0, C.STEM_Z))
+            .circle(P["crown_bore_dia"] / 2.0 + 0.15)
+            .extrude(bb.xmax - bb.xmin - 1.0))
     pin = (cq.Workplane("YZ", origin=(bb.xmin - 5.2, 0, C.STEM_Z))
            .circle(CROWN_PIN / 2.0).extrude(5.4))
-    save(crown.union(fill).union(pin), "p06_crown")
+    save(crown.union(fill).union(pin).clean(), "p06_crown")
 
 
 # --------------------------------------------------------- movement ring ---
