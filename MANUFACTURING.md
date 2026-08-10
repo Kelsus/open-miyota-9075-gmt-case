@@ -85,6 +85,9 @@ bezel height, reveal, and exterior geometry are unchanged.
 
 ### Finishing map
 
+`python3 build_finishing_map.py` renders this map as a color-coded PDF
+(`output/finishing_map.pdf`) to attach to an RFQ.
+
 - Case top faces and lug tops: radial brush
 - Case flank: horizontal brush; lug flanks: brush following the arc
 - All chamfers (shoulder 0.45, lug top, case bottom 0.30): polished
