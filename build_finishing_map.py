@@ -19,6 +19,7 @@ from stl import mesh as stlmesh
 
 HERE = os.path.dirname(__file__)
 OUT = os.path.join(HERE, "output")
+EDGE_BAND = None
 
 COLORS = {
     "radial":   ("#7da7d9", "radial / sunburst brush"),
@@ -34,6 +35,42 @@ def load(name):
     if not os.path.exists(f):
         raise SystemExit(f"{f} missing - run case_model.py first")
     return stlmesh.Mesh.from_file(f).vectors.astype(np.float64)
+
+
+def plan_edge_band(tris, lim=(-26, 26), W=640, band_mm=0.70):
+    """Boolean pixel mask of the strip just inside the part's plan
+    silhouette. The chamfer along the top boundary chain always lives in
+    this strip; the diving lug top is interior."""
+    lo, hi = lim
+    scale = W / (hi - lo)
+    mask = np.zeros((W, W), dtype=bool)
+    uu, vv = tris[:, :, 0], tris[:, :, 1]
+    for t_u, t_v in zip(uu, vv):
+        pu = (t_u - lo) * scale
+        pv = (t_v - lo) * scale
+        umin, umax = int(max(0, pu.min())), int(min(W - 1, pu.max())) + 1
+        vmin, vmax = int(max(0, pv.min())), int(min(W - 1, pv.max())) + 1
+        if umin >= umax or vmin >= vmax:
+            continue
+        gu, gv = np.meshgrid(np.arange(umin, umax) + 0.5,
+                             np.arange(vmin, vmax) + 0.5)
+        det = ((pu[1] - pu[0]) * (pv[2] - pv[0])
+               - (pv[1] - pv[0]) * (pu[2] - pu[0]))
+        if abs(det) < 1e-12:
+            continue
+        w0 = ((pu[1] - gu) * (pv[2] - gv) - (pv[1] - gv) * (pu[2] - gu)) / det
+        w1 = ((pu[2] - gu) * (pv[0] - gv) - (pv[2] - gv) * (pu[0] - gu)) / det
+        w2 = 1 - w0 - w1
+        m = (w0 >= -1e-6) & (w1 >= -1e-6) & (w2 >= -1e-6)
+        mv, mu = np.where(m)
+        mask[mv + vmin, mu + umin] = True
+    eroded = mask.copy()
+    for _ in range(max(1, round(band_mm * scale))):
+        e = eroded.copy()
+        e[1:, :] &= eroded[:-1, :]; e[:-1, :] &= eroded[1:, :]
+        e[:, 1:] &= eroded[:, :-1]; e[:, :-1] &= eroded[:, 1:]
+        eroded = e
+    return mask & ~eroded, lo, scale
 
 
 def render(ax, tris, classes, view, lim, flip=False):
@@ -61,9 +98,15 @@ def render(ax, tris, classes, view, lim, flip=False):
     lum = 0.55 + 0.45 * np.clip(np.abs(n @ light), 0, 1)
     img = np.ones((H, W, 3))
     zbuf = np.full((H, W), -1e9)
-    base = np.array([matplotlib.colors.to_rgb(COLORS[c][0])
+    c_pol = np.array(matplotlib.colors.to_rgb(COLORS["polish"][0]))
+    c_rad = np.array(matplotlib.colors.to_rgb(COLORS["radial"][0]))
+    base = np.array([matplotlib.colors.to_rgb(
+                        COLORS[c][0] if c != "auto" else COLORS["radial"][0])
                      for c in classes])[ok]
-    for t_u, t_v, t_d, l, col in zip(uu[ok], vv[ok], dd[ok], lum, base):
+    is_auto = np.array([c == "auto" for c in classes])[ok]
+    xx, yy = tris[:, :, 0][ok], tris[:, :, 1][ok]
+    for t_u, t_v, t_d, t_x, t_y, l, col, au in zip(
+            uu[ok], vv[ok], dd[ok], xx, yy, lum, base, is_auto):
         pu = (t_u - u0) / (u1 - u0) * W
         pv = (v1 - t_v) / (v1 - v0) * H
         umin, umax = int(max(0, pu.min())), int(min(W - 1, pu.max())) + 1
@@ -88,7 +131,18 @@ def render(ax, tris, classes, view, lim, flip=False):
         dd_ = depth[m]
         upd = dd_ > zbuf[vi, ui]
         zbuf[vi[upd], ui[upd]] = dd_[upd]
-        img[vi[upd], ui[upd]] = np.clip(col * l, 0, 1)
+        if au and EDGE_BAND is not None:
+            band, blo, bscale = EDGE_BAND
+            Wb = band.shape[0]
+            px = (w0 * t_x[0] + w1 * t_x[1] + w2 * t_x[2])[m][upd]
+            py = (w0 * t_y[0] + w1 * t_y[1] + w2 * t_y[2])[m][upd]
+            bu = np.clip(((px - blo) * bscale).astype(int), 0, Wb - 1)
+            bv = np.clip(((py - blo) * bscale).astype(int), 0, Wb - 1)
+            inb = band[bv, bu]
+            cols = np.where(inb[:, None], c_pol, c_rad)
+            img[vi[upd], ui[upd]] = np.clip(cols * l, 0, 1)
+        else:
+            img[vi[upd], ui[upd]] = np.clip(col * l, 0, 1)
     ax.imshow(img, extent=(u0, u1, v0, v1))
     ax.set_aspect("equal")
     ax.set_xticks([]); ax.set_yticks([])
@@ -103,17 +157,22 @@ def classify_case(tris):
     nl = np.linalg.norm(n, axis=1); nz = np.zeros(len(n))
     nz[nl > 1e-12] = n[nl > 1e-12, 2] / nl[nl > 1e-12]
     rc = np.hypot(tris[:, :, 0].mean(axis=1), tris[:, :, 1].mean(axis=1))
+    xc = tris[:, :, 0].mean(axis=1)
+    yc = tris[:, :, 1].mean(axis=1)
+    # the polished chamfer is one continuous band along the top boundary
+    # chain: case rim AND down every lug edge to the tip. Chamfer surface
+    # always lies in the plan-silhouette edge strip; the diving lug top
+    # (same normal band) is interior. Facets in the ambiguous normal band
+    # are marked "auto" and resolved PER PIXEL in render() against the
+    # strip, so the band edge is smooth rather than facet-jagged.
+    global EDGE_BAND
+    EDGE_BAND = plan_edge_band(tris)
     out = []
     for i in range(len(tris)):
         if abs(nz[i]) < 0.25 or nz[i] < -0.25:
             out.append("linear")
-        elif 0.25 < nz[i] < 0.85 and 18.85 < rc[i] < 19.60:
-            # the revolved rim chamfer is the only polish region that can
-            # be identified deterministically; the lug-edge chamfers share
-            # their normal band with the diving lug top (a facet-size
-            # heuristic speckled the lugs), so those are carried by the
-            # callouts instead
-            out.append("polish")
+        elif 0.25 < nz[i] < 0.88:
+            out.append("auto")
         else:
             out.append("radial")
     return out
@@ -221,15 +280,14 @@ def main():
               [(case, cc, "side", (-26, 26, -3, 15), "side"),
                (case, cc, "top", (-26, 26, -26, 26), "top")],
               [(0, "flank + lug flanks:\nlinear brush", (19.4, 5.5), (-25.5, 9.5)),
-               (0, "shoulder + lug-top\nchamfer 0.45: polish", (17.5, 8.0), (-25.5, 13.5)),
+               (0, "chamfer 0.45: polish,\ncontinuous rim to lug tip", (17.5, 8.0), (-25.5, 13.5)),
                (0, "bottom-edge chamfer\n0.30: polish", (18.5, 1.4), (-25.5, -1.5)),
                (1, "case top + lug tops:\nradial brush", (8, 13), (-25, 23)),
                (1, "lug underside: linear\nbrush along the horn", (-11, -21.5), (-25, -24))],
               ["radial", "linear", "polish"],
-              footnote=("Lug-edge chamfers are not color-separable from "
-                        "the curved lug top in this rendering; per the "
-                        "callouts, every top-edge chamfer band (0.45) and "
-                        "the bottom-edge chamfer (0.30) is polished."))
+              footnote=("The polished chamfer is ONE continuous band: "
+                        "case rim, down every lug edge, around the tip "
+                        "(0.45), plus the bottom-edge chamfer (0.30)."))
         bc = classify_bezel(bez)
         sheet(pdf, "Sheet 2 - Bezel",
               [(bez, bc, "top", (-21, 21, -21, 21), "top"),
