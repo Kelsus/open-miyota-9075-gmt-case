@@ -102,17 +102,20 @@ def classify_case(tris):
     n = np.cross(tris[:, 1] - tris[:, 0], tris[:, 2] - tris[:, 0])
     nl = np.linalg.norm(n, axis=1); nz = np.zeros(len(n))
     nz[nl > 1e-12] = n[nl > 1e-12, 2] / nl[nl > 1e-12]
-    diag = np.linalg.norm(tris.max(axis=1) - tris.min(axis=1), axis=1)
+    rc = np.hypot(tris[:, :, 0].mean(axis=1), tris[:, :, 1].mean(axis=1))
     out = []
     for i in range(len(tris)):
         if abs(nz[i]) < 0.25 or nz[i] < -0.25:
             out.append("linear")
-        elif nz[i] > 0.85:
-            out.append("radial")
+        elif 0.25 < nz[i] < 0.85 and 18.85 < rc[i] < 19.60:
+            # the revolved rim chamfer is the only polish region that can
+            # be identified deterministically; the lug-edge chamfers share
+            # their normal band with the diving lug top (a facet-size
+            # heuristic speckled the lugs), so those are carried by the
+            # callouts instead
+            out.append("polish")
         else:
-            # chamfer strips are 0.30-0.45 wide -> small facets; the
-            # diving lug top has the same normal band but large facets
-            out.append("polish" if diag[i] < 1.6 else "radial")
+            out.append("radial")
     return out
 
 
@@ -223,10 +226,10 @@ def main():
                (1, "case top + lug tops:\nradial brush", (8, 13), (-25, 23)),
                (1, "lug underside: linear\nbrush along the horn", (-11, -21.5), (-25, -24))],
               ["radial", "linear", "polish"],
-              footnote=("Note: small gold speckle on the lug tops is a "
-                        "classifier rendering artifact. Lug top faces are "
-                        "radial brush; only the 0.45 edge chamfer band is "
-                        "polished."))
+              footnote=("Lug-edge chamfers are not color-separable from "
+                        "the curved lug top in this rendering; per the "
+                        "callouts, every top-edge chamfer band (0.45) and "
+                        "the bottom-edge chamfer (0.30) is polished."))
         bc = classify_bezel(bez)
         sheet(pdf, "Sheet 2 - Bezel",
               [(bez, bc, "top", (-21, 21, -21, 21), "top"),

@@ -1359,7 +1359,12 @@ def engrave_caseback_ring(ring):
             if ch == " ":
                 continue
             frac = (i - (n - 1) / 2.0) / max(n - 1, 1)
-            ang = center_deg - frac * span_deg
+            # top-arc words progress clockwise, bottom-arc words counter-
+            # clockwise: both then read left-to-right in the as-worn view
+            # (the bottom word ran right-to-left for every rev before this
+            # -- caught by the finishing map's as-worn rendering)
+            ang = (center_deg + frac * span_deg if flip
+                   else center_deg - frac * span_deg)
             rad = math.radians(ang)
             x, y = R * math.cos(rad), R * math.sin(rad)
             rot = ang - 90 if not flip else ang + 90
