@@ -187,6 +187,23 @@ def main():
     dst = os.path.join(OUT, "review.html")
     open(dst, "w").write(html)
     print("wrote", dst, f"({len(html)//1024} KB)  L2L={l2l:.1f} THK={thk:.1f}")
+    # standalone copy for GitHub Pages: the artifact host wraps the body
+    # fragment in a document; the Pages copy needs the wrapper itself
+    docs = os.path.join(HERE, "docs")
+    os.makedirs(docs, exist_ok=True)
+    page = (
+        "<!doctype html>\n<html lang=\"en\">\n<head>\n"
+        "<meta charset=\"utf-8\">\n"
+        "<meta name=\"viewport\" content=\"width=device-width, "
+        "initial-scale=1\">\n"
+        "<title>Kelsus Intercontinental - Open Miyota 9075 GMT Case</title>\n"
+        "<meta name=\"description\" content=\"Design review for an open, "
+        "parametric 39 mm GMT watch case for the Miyota 9075. MIT code, "
+        "CERN-OHL-P hardware.\">\n"
+        "</head>\n<body style=\"margin:0\">\n" + html + "\n</body>\n</html>\n")
+    dst2 = os.path.join(docs, "index.html")
+    open(dst2, "w").write(page)
+    print("wrote", dst2, f"({len(page)//1024} KB)")
 
 
 if __name__ == "__main__":
