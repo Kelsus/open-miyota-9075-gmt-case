@@ -1,5 +1,31 @@
 # Open Miyota 9075 GMT case
 
+## Why? (written by Jon Christensen)
+I have been enjoying building watches, and felt like it would be a fun 
+challenge to try to build a true GMT. The most available true GMT 
+movement is the Miyota 9075. Unfortunately, I couldn't find any cases
+to go with this movement on AliExpress or any of the other main watch
+mod community ecommerce sites.
+
+I tried buying the cheapest complete watch I could find (A 
+Tissel available here: [https://tisellkr.com/](https://m.tisellkr.com/product/tisell-miyota-9075-gmt/49/), 
+but it doesn't have an exhibition caseback, and I didn't love the 
+way the bezel looked.
+
+Fable 5 is getting good enough to be able to work with as a partner
+to do CAD design. So I worked with it to build this design. It probably
+took longer with Fable as a partner than it would have taken an expert
+CAD user, but I'm pretty happy with how it turned out. And given that
+the point of this exercise is just to get my hands on a few watch 
+cases, I figured, why not just donate this case to the world as an 
+open source project!?
+
+Feel free to use it however you want, mod it how you like, use it as a 
+starting point for your real watches in your real watch company. You
+don't even have to mention where the design came from.
+
+## The details (mostly written by AI.
+
 A complete, parametric watch case for the Miyota 9075 GMT movement,
 written in [CadQuery](https://cadquery.readthedocs.io/) and verified by
 a 113-assertion test suite. The repository contains everything needed to
