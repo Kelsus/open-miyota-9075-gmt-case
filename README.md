@@ -24,7 +24,7 @@ Feel free to use it however you want, mod it how you like, use it as a
 starting point for your real watches in your real watch company. You
 don't even have to mention where the design came from.
 
-## The details (mostly written by AI.
+## The details (mostly written by AI.)
 
 A complete, parametric watch case for the Miyota 9075 GMT movement,
 written in [CadQuery](https://cadquery.readthedocs.io/) and verified by
