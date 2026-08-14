@@ -1495,6 +1495,38 @@ def build_dial_ref():
             .circle(p["dial_dia"] / 2.0).extrude(p["dial_thk"]))
 
 
+def build_iring_installed():
+    """Crystal I-ring at INSTALLED dimensions: wall compressed to the
+    0.30 annulus between crystal and bore. Free-state solid for the
+    gasket vendor is 10_iring_gasket.step (gasket_models.py)."""
+    p = P
+    z0 = CRYSTAL_SEAT_Z
+    return (cq.Workplane("XZ")
+            .moveTo(p["crystal_dia"] / 2.0, z0)
+            .lineTo(p["crystal_bore_dia"] / 2.0, z0)
+            .lineTo(p["crystal_bore_dia"] / 2.0, z0 + 1.40)
+            .lineTo(p["crystal_dia"] / 2.0, z0 + 1.40)
+            .close().revolve(360, (0, 0, 0), (0, 1, 0)))
+
+
+def build_bezel_oring_installed():
+    """Bezel centring O-ring at INSTALLED shape: elliptical section
+    (area-preserving squash of the cs 0.70 circle) seated on the boss
+    groove floor, clear of the bezel bore. Free-state solid is
+    11_bezel_oring.step (gasket_models.py)."""
+    p = P
+    a_rad, b_ax = 0.26, 0.47                   # section half-axes
+    r_c = p["bezel_oring_floor"] / 2.0 + a_rad
+    z_c = ORING_Z0 + p["bezel_oring_w"] / 2.0
+    # absolute-coordinate section polygon: .center() would shift the
+    # workplane-local revolve axis into the profile (the revolve-axis
+    # gotcha) and the revolve fails
+    pts = [(r_c + a_rad * math.cos(t), z_c + b_ax * math.sin(t))
+           for t in [i * 2 * math.pi / 60 for i in range(60)]]
+    return (cq.Workplane("XZ").polyline(pts).close()
+            .revolve(360, (0, 0, 0), (0, 1, 0)))
+
+
 # ---------------------------------------------------------------------------
 # BUILD + EXPORT
 # ---------------------------------------------------------------------------
@@ -1566,6 +1598,10 @@ def main():
             color=cq.Color(0.85, 0.75, 0.35, 0.5))
     asm.add(build_dial_ref(), name="dial_ref",
             color=cq.Color(0.15, 0.45, 0.5, 0.8))
+    asm.add(build_iring_installed(), name="iring_gasket_installed",
+            color=cq.Color(0.9, 0.9, 0.85, 0.8))
+    asm.add(build_bezel_oring_installed(), name="bezel_oring_installed",
+            color=cq.Color(0.2, 0.2, 0.2, 0.9))
     tmp = os.path.join(OUT, "_lugs_tmp.step")
     if os.path.exists(tmp):
         os.remove(tmp)
