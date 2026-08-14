@@ -36,7 +36,7 @@ and you get smooth bores. Every RFQ must carry these:
 
 | Interface | Callout | Where |
 |---|---|---|
-| Caseback to case | M30 x 0.5, internal 6H (case), external 6g (back) | case bore Ø30.0 region, z 0 to 3.5 |
+| Caseback to case | M32 x 0.5, internal 6H (case), external 6g (back) | case bore Ø32.0 region, z 0 to 3.5 |
 | Crown to tube | S0.9 x 0.225 (Miyota 9075 stem thread standard) | crown bore |
 | Tube to case | press fit: tube shank Ø2.50 s6 into case bore Ø2.48 H7 | crown side, stem axis 4.62 above the back plane |
 | Tube thread (crown screws onto it) | Ø3.9 x 0.35, depth 0.22 | tube OD |
@@ -60,8 +60,8 @@ may propose its standard equivalent parts.
 | Spring-bar holes | Ø1.35 ±0.05, 90° csk to Ø1.65 | position ±0.05 |
 | Ø39.0 cylindrical end-link land | down to z 1.60 from the back plane | |
 | Movement: Miyota 9075 | register Ø25.60 Js8, flange relief Ø26.0 x 2.05 deep | per Miyota drawing 907500C0 |
-| Dial | Ø31.0; pocket Ø31.30 | +0.05 / −0 |
-| Case bore | Ø28.60 | H8 |
+| Dial | Ø31.0; loads from the back through the caseback thread and pass bore, retained by the rehaut ledge | |
+| Dial pass bore | Ø31.40 | H8 |
 | Crystal bore | Ø32.00 H7; crystal Ø31.40 flat-top domed sapphire, I-ring gasket 0.35 wall, 0.10 diametral crush | |
 | Bezel bore and boss | Ø34.10 bore on Ø34.00 boss, retention groove floor Ø32.80 | bore H8, boss h7 |
 | Caseback sapphire | Ø23.4 x 1.4, view Ø21.0, pressed from outside against an internal ledge | |

@@ -115,7 +115,7 @@
 <div class="wrap">
   <div class="eyebrow">
     <span>Case Design</span><span class="dot"></span>
-    <span>Rev F.9 — caseback bottom-arc engraving reads left-to-right as worn</span><span class="dot"></span>
+    <span>Rev G — back-loading dial architecture (factory DFM fix), M32×0.5 caseback</span><span class="dot"></span>
     <span>Miyota 9075 GMT</span><span class="dot"></span>
     <span>2026·08·02</span>
   </div>
@@ -189,7 +189,7 @@
       <li><b>Lug gap: 20.00 or 20.7?</b><p>Your renders measure a <b>20.67–21.14&nbsp;mm</b> gap between the lug inner faces. I have held <b>20.00 +0.10/−0</b> because that is the functional spec a 20&nbsp;mm strap and an Oyster end link are built to. If the wider look is deliberate, say so and I will open it up — but then the bracelet has to be made to match.</p></li>
       <li><b>Spring bar: sports or dress?</b><p>I committed to the <b>Oyster/sports</b> standard — Ø2.0&nbsp;mm bar, Ø1.2&nbsp;mm tips, so the lug hole is <b>Ø1.35</b>. Your render's holes read closer to Ø0.9–1.0 (the ISO dress-watch size). The bracelet supplier has to match whichever we pick.</p></li>
       <li><b>Bezel top-face angle.</b><p>The three mockups disagree: the two 3/4 views give ≈12° from horizontal, the side view ≈30°. I used <b>12°</b> (a 0.64&nbsp;mm drop across the 3.0&nbsp;mm annulus) because the 3/4 views are self-consistent and the side view has measurable perspective error. Worth a look.</p></li>
-      <li><b>Caseback thread pitch.</b><p><b>M30×0.5</b> is genuine watch practice (it's what Rolex uses) but it is <i>not</i> in the ISO 261 preferred series, so it can't be written as a standard callout and no major toolmaker stocks the tap — it wants single-point turning or thread milling. M30×0.75 is the standards-clean alternative. Your call; I've dimensioned it explicitly either way.</p></li>
+      <li><b>Caseback thread pitch.</b><p><b>M32×0.5</b> is genuine watch practice (it's what Rolex uses) but it is <i>not</i> in the ISO 261 preferred series, so it can't be written as a standard callout and no major toolmaker stocks the tap — it wants single-point turning or thread milling. M32×0.75 is the standards-clean alternative. Your call; I've dimensioned it explicitly either way.</p></li>
       <li><b>Finishing map.</b><p>Assumed from the renders: brushed top face, flank and lug tops; polished on the bezel's inner and outer chamfers, the lug outer bevel wrapping the tip, the case top-edge bevel and the crown end band. Confirm and I'll annotate face-by-face for CAM.</p></li>
       <li><b>Standards worth buying before cutting metal.</b><p>Three paywalled documents would replace inference with spec: <b>NIHS G 60-30</b> (caseback thread dimensions, ~CHF 40), <b>NIHS G 60-32</b> (the 6-notch pattern, ~CHF 45), and <b>ISO 14368-1</b> (sapphire glass dimensions/tolerances, ~CHF 60). Everything else is sourced and cited.</p></li>
     </ol>

@@ -45,8 +45,9 @@ P = dict(
     # --- Dial (locked: 31 mm) ---------------------------------------------
     dial_dia            = 31.00,
     dial_thk            = 0.40,
-    dial_pocket_dia     = 31.30,
-    dial_pocket_h       = 0.60,
+    dial_ledge_clear    = 0.05,   # gap dial-top to rehaut ledge: the
+                                  # dial is held by the movement stack,
+                                  # never pinched by the case
     dial_feet_dia       = 0.70,
     rehaut_dia          = 29.50,
 
@@ -62,7 +63,12 @@ P = dict(
                                   # ~87 MPa at 12.5 bar (ISO 6425 125% of
                                   # 100 m) = SF 3.4 on sapphire's
                                   # conservative 300 MPa MOR
-    cb_thread_dia       = 30.0,   # caseback ring thread pilot (M30x0.5)
+    cb_thread_dia       = 32.0,   # caseback ring thread pilot (M32x0.5).
+                                  # REV G: was M30x0.5 -- the factory DFM
+                                  # found the Ø31 dial could not pass ANY
+                                  # opening; the dial+movement now loads
+                                  # from the back through this thread
+                                  # (minor Ø31.46) and the pass bore
     cb_thread_top_z     = 3.50,   # taller caseback barrel: a 2.45 mm ring
                                   # could not hold notches + gasket groove
                                   # + real thread engagement. Internal
@@ -75,9 +81,10 @@ P = dict(
     # derived: Z_DIAL = 0.20+1.20+0.40+5.12 = 6.92 ; STEM_Z = 4.37
 
     # --- Movement bore / ring ---------------------------------------------
-    case_bore_dia       = 28.60,
+    case_bore_dia       = 31.40,  # REV G: dial pass bore (dial Ø31.0 +
+                                  # 0.40); runs to the rehaut ledge
     case_step_dia       = 25.30,
-    ring_od             = 28.43,  # POM in a steel bore: 0.10 diametral
+    ring_od             = 31.20,  # POM in the Ø31.40 pass bore: 0.20
                                   # goes to interference when warm
     ring_bore_dia       = 25.65,
     ring_flange_pocket  = 26.15,  # relief for the Ø26.00 band — which sits
@@ -292,6 +299,11 @@ AXIS = 0.0            # revolve profiles may touch the axis; a 1e-4
 case_r = P["case_dia"] / 2.0
 Z_DIAL = (P["back_recess_z"] + P["cb_sapphire_thk"] + P["cb_ledge_thk"]
           + P["rotor_clear"] + P["mvmt_h"])
+# REV G: the dial (Ø31.0) loads FROM THE BACK through the M32x0.5 thread
+# and the Ø31.40 pass bore, and is retained by the rehaut ledge. The dial
+# top stops dial_ledge_clear below the ledge; the movement stack (ring
+# preloaded by the caseback) holds it there.
+DIAL_LEDGE_Z = Z_DIAL + P["dial_thk"] + P["dial_ledge_clear"]
 STEM_Z = Z_DIAL - P["stem_below_dial"]
 CRYSTAL_SEAT_Z = Z_DIAL + P["hand_clear"]
 STEEL_TOP = CRYSTAL_SEAT_Z + P["crystal_wall"]          # boss top
@@ -465,11 +477,10 @@ def build_midcase_outer():
 
 def build_internal_void():
     """Cutting tool for every internal cavity: caseback thread bore, movement
-    bore, dial pocket, rehaut, crystal seat. Cut after the lug union."""
+    bore, dial pass bore, rehaut, crystal seat. Cut after the lug union."""
     p = P
     r_cb   = p["cb_thread_dia"] / 2.0
     r_bore = p["case_bore_dia"] / 2.0
-    r_dpkt = p["dial_pocket_dia"] / 2.0
     r_reh  = p["rehaut_dia"] / 2.0
     r_cry  = p["crystal_bore_dia"] / 2.0
 
@@ -479,10 +490,12 @@ def build_internal_void():
         .lineTo(r_cb, -0.5)
         .lineTo(r_cb, p["cb_thread_top_z"])              # caseback bore
         .lineTo(r_bore, p["cb_thread_top_z"])
-        .lineTo(r_bore, Z_DIAL)                          # movement bore
-        .lineTo(r_dpkt, Z_DIAL)                          # dial pocket
-        .lineTo(r_dpkt, Z_DIAL + p["dial_pocket_h"])
-        .lineTo(r_reh, Z_DIAL + p["dial_pocket_h"])      # rehaut
+        .lineTo(r_bore, DIAL_LEDGE_Z)                    # dial pass bore:
+                                                         # dial + movement
+                                                         # enter from the
+                                                         # back (REV G)
+        .lineTo(r_reh, DIAL_LEDGE_Z)                     # rehaut ledge
+                                                         # retains the dial
         .lineTo(r_reh, CRYSTAL_SEAT_Z)
         .lineTo(r_cry, CRYSTAL_SEAT_Z)                   # crystal seat
         .lineTo(r_cry, STEEL_TOP - P["crystal_lead_c"])
@@ -1279,7 +1292,7 @@ def build_caseback():
     bottom face take a standard case wrench.
 
     Threads are represented as plain cylinders with the callout carried in
-    the spec sheet (M30x0.5) — modelling helical geometry bloats the STEP
+    the spec sheet (M32x0.5) — modelling helical geometry bloats the STEP
     and CAM treats it as a callout anyway.
     """
     p = P

@@ -1,11 +1,11 @@
 """FDM print adaptation of the Kelsus Intercontinental case.
 
 Derives snap-together prototype parts from the finished STEP exports in
-output/. The machined design's micro-fasteners cannot print (M30x0.5
+output/. The machined design's micro-fasteners cannot print (M32x0.5
 thread, S0.9 crown thread, 0.35 mm steel spring ring), so each interface
 is replaced by a snap feature sized for PETG strain, not steel:
 
-  caseback  M30x0.5 thread      -> 3 cantilever snap tabs into a bore groove
+  caseback  M32x0.5 thread      -> 3 cantilever snap tabs into a bore groove
   bezel     slit spring ring    -> integral snap lip over the boss groove
   crystal   I-ring gasket press -> 6 crush ribs into the Ø32.0 bore
   window    press + ledge       -> 3 crush ribs into the back pocket
@@ -27,10 +27,10 @@ PRT = os.path.join(OUT, "print")
 os.makedirs(PRT, exist_ok=True)
 
 # ---- snap dimensioning (PETG, calibrated Bambu ±0.05) ---------------------
-CB_BORE = 30.30          # was Ø30.0 thread bore: +0.30 print clearance
-CB_GROOVE_ID = 30.95     # snap groove in the case bore
+CB_BORE = 32.30          # was Ø32.0 thread bore: +0.30 print clearance
+CB_GROOVE_ID = 32.95     # snap groove in the case bore
 CB_GROOVE_Z = (2.40, 3.40)
-CB_BUMP_CREST = 30.60    # 0.15/side interference vs CB_BORE
+CB_BUMP_CREST = 32.60    # 0.15/side interference vs CB_BORE
 CB_BUMP_Z = (2.55, 3.25)
 CB_TAB_ARC = 26.0        # degrees of barrel per tab
 CB_SLIT_W = 1.4

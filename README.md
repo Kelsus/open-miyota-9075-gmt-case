@@ -28,7 +28,7 @@ don't even have to mention where the design came from.
 
 A complete, parametric watch case for the Miyota 9075 GMT movement,
 written in [CadQuery](https://cadquery.readthedocs.io/) and verified by
-a 113-assertion test suite. The repository contains everything needed to
+a 120-assertion test suite. The repository contains everything needed to
 study the design, rebuild it from parameters, 3D print a snap-together
 prototype, or send it to a machine shop: STEP files for all nine parts,
 drawing callouts for the features STEP cannot carry, print-adapted STLs,
@@ -61,7 +61,7 @@ with the case is circular by construction and needs no fillets.
 | Lug width | 20 mm, drilled, Ø1.35 spring-bar holes |
 | Dial | Ø31.0 |
 | Crystal | Ø31.4 flat-top domed sapphire, I-ring gasket |
-| Caseback | M30 x 0.5 threaded ring, Ø21 sapphire window |
+| Caseback | M32 x 0.5 threaded ring, Ø21 sapphire window |
 | Bezel | steel 24 h, bidirectional, 120 clicks, ball detent |
 | Water resistance | designed to 10 ATM (untested; see Status) |
 | Material | 316L |
@@ -77,7 +77,7 @@ Get it from [Miyota](https://www.miyotamovement.com/).
 | Path | What it is |
 |---|---|
 | `case_model.py` | The design. One parameter dict is the spec sheet; everything downstream regenerates from it. |
-| `verify_case.py` | 113 hard assertions: stack heights, fits, clearances, sapphire stress, thread and gasket geometry, mesh-level regression checks. Run it after any change. |
+| `verify_case.py` | 120 hard assertions: stack heights, fits, clearances, sapphire stress, thread and gasket geometry, mesh-level regression checks. Run it after any change. |
 | `scan_step.py` | Screens exported STEP files for geometry that breaks CAD importers (degenerate faces, self-intersecting shells). |
 | `output/*.step` | The nine parts plus an assembly, ready for CAD or quoting. |
 | `print_variant.py`, `PRINTING.md`, `output/print/` | FDM adaptation: snap fits replace the threads and the spring ring. Prints on a standard 0.4 mm nozzle; 0.2 mm recommended for the small parts. |
@@ -93,7 +93,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 python3 case_model.py     # writes output/*.step and *.stl
-python3 verify_case.py    # 113 checks; exit 0 means all pass
+python3 verify_case.py    # 120 checks; exit 0 means all pass
 ```
 
 The lug construction runs in a subprocess because OCCT segfaults are not
@@ -104,7 +104,7 @@ Two facts about the exports that will save you a bad afternoon:
 
 1. **Threads are not modeled.** Threaded interfaces are plain cylinders
    at nominal diameter with the callout carried in drawings and comments
-   (M30 x 0.5 caseback, S0.9 x 0.225 crown, tube press fits). If you
+   (M32 x 0.5 caseback, S0.9 x 0.225 crown, tube press fits). If you
    send a STEP to a machine shop without the callouts, you get smooth
    bores.
 2. **Exports are screened, not trusted.** OCCT booleans sometimes
@@ -134,7 +134,7 @@ instead of sapphire.
 ## Status
 
 What has been done: the geometry is complete for all nine parts, passes
-its 113 checks, imports into Fusion 360 without artifacts, and 3D prints
+its 120 checks, imports into Fusion 360 without artifacts, and 3D prints
 as a snap-together prototype. Every attachment is engineered and
 documented: crystal gasket, bezel retention and detent, caseback thread
 and O-ring, crown tube press fit, movement ring, spring bars.

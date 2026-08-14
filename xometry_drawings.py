@@ -29,11 +29,11 @@ GENERAL = ("GENERAL: dims in mm. Geometry per attached STEP (master). "
 
 SHEETS = [
     ("x01_midcase", "MIDCASE", "Aluminum 6061-T6 (round 2: 316L)", [
-        ("Caseback thread", "M30 x 1.0 - 6H internal, full depth z 0-3.5 "
-         "(PROTOTYPE substitution for the design's M30 x 0.5; mate with "
+        ("Caseback thread", "M32 x 1.0 - 6H internal, full depth z 0-3.5 "
+         "(PROTOTYPE substitution for the design's M32 x 0.5; mate with "
          "x04 external thread)"),
         ("Crystal bore", "Ø32.00 H7, seat depth per STEP"),
-        ("Case bore", "Ø28.60 H8"),
+        ("Dial pass bore", "Ø31.40 H8 (dial loads from the back)"),
         ("Dial pocket", "Ø31.30 +0.05/-0"),
         ("Crown / tube bore", "Ø2.48 H7 through flank at z 4.62 from "
          "back plane; inner Ø2.00 stem clearance per STEP"),
@@ -57,8 +57,8 @@ SHEETS = [
         ("Finish", "as machined"),
     ]),
     ("x04_caseback", "CASEBACK RING", "Aluminum 6061-T6 (round 2: 316L)", [
-        ("Thread", "M30 x 1.0 - 6g external on Ø30 band (PROTOTYPE "
-         "substitution for M30 x 0.5; mate with x01 internal thread)"),
+        ("Thread", "M32 x 1.0 - 6g external on Ø32 band (PROTOTYPE "
+         "substitution for M32 x 0.5; mate with x01 internal thread)"),
         ("O-ring groove", "on OD per STEP: retain (gasket not fitted on "
          "prototype)"),
         ("Window pocket", "Ø23.42 +0.05/-0 x 1.40 deep, internal "
@@ -72,7 +72,7 @@ SHEETS = [
         ("Movement register", "Ø25.60 Js8 - CRITICAL, this locates "
          "the Miyota 9075"),
         ("Flange seat", "Ø26.00 relief per STEP"),
-        ("OD", "Ø28.43 (slips into case bore Ø28.60 H8)"),
+        ("OD", "Ø31.20 (slips into dial pass bore Ø31.40 H8)"),
         ("Stem slot", "per STEP, aligns with case tube bore"),
         ("Finish", "as machined"),
     ]),

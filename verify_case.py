@@ -114,10 +114,22 @@ def check_movement():
     check("case bore clearance on ring (0.05-0.20)",
           0.05 <= case_clr <= 0.20, f"{case_clr:.3f} diametral")
 
-    # dial fits its pocket, rehaut covers the dial edge
-    check("dial pocket clears dial",
-          P["dial_pocket_dia"] > P["dial_dia"],
-          f"pocket {P['dial_pocket_dia']:.2f} vs dial {P['dial_dia']:.2f}")
+    # REV G: THE ASSEMBLY-PATH CHECK. The factory DFM found the dial
+    # could not reach its seat: every opening between the outside world
+    # and the dial seat must pass the dial. The caseback thread passes at
+    # its MINOR diameter (internal thread: D - 1.0825 * pitch).
+    thread_minor = P["cb_thread_dia"] - 1.0825 * P["cb_thread_pitch"]
+    pass_dia = min(thread_minor, P["case_bore_dia"])
+    check("ASSEMBLY PATH: dial passes every opening to its seat",
+          pass_dia >= P["dial_dia"] + 0.30,
+          f"tightest opening {pass_dia:.2f} vs dial {P['dial_dia']:.2f} "
+          f"(thread minor {thread_minor:.2f}, bore {P['case_bore_dia']:.2f})")
+    check("dial pass bore clears dial (0.30-0.60)",
+          0.30 <= P["case_bore_dia"] - P["dial_dia"] <= 0.60,
+          f"{P['case_bore_dia'] - P['dial_dia']:.2f} diametral")
+    check("rehaut ledge retains dial (>= 0.6 per side)",
+          (P["dial_dia"] - P["rehaut_dia"]) / 2 >= 0.6,
+          f"{(P['dial_dia'] - P['rehaut_dia']) / 2:.2f}")
     check("rehaut overlaps dial edge",
           P["rehaut_dia"] < P["dial_dia"],
           f"rehaut {P['rehaut_dia']:.2f} < dial {P['dial_dia']:.2f}")
